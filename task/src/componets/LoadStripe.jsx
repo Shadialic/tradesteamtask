@@ -4,32 +4,18 @@ import {
   useStripe,
   useElements,
   PaymentElement,
-  Elements,
 } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
+import { SuccessRequest } from "../api/api";
 // import { SuccessRequest } from "../../api/UserApi";
 
-// Initialize Stripe with your public API key
-const stripePromise = loadStripe("your-publishable-key-here");
-
-function LoadStripe({
-  clientSecret,
-  bugs,
-  courseId,
-  tutorId,
-  userId,
-  newOffer,
-  courseName,
-}) {
+function LoadStripe({ formData, open, setOpen }) {
   const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
-  const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen((cur) => !cur);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!stripe || !elements) {
@@ -45,16 +31,7 @@ function LoadStripe({
       });
 
       if (paymentIntent) {
-        const Buydata = {
-          paymentstatus: "success",
-          amount: paymentIntent.amount,
-          date: new Date(),
-          userId: userId,
-          tutorId: tutorId,
-          courseName: courseName,
-          courseId: courseId,
-        };
-        const response = await SuccessRequest(Buydata);
+        const response = await SuccessRequest(formData);
         toast(response.data.message);
         console.log(response, "response when it is successful");
 
@@ -83,11 +60,9 @@ function LoadStripe({
   return (
     <div>
       <Button
-        className="flex justify-center items-center w-[40%] bg-violet-600 text-white font-prompt ml-4"
+        className="flex justify-center items-center w-[100%] bg-[#2257d3]  text-white font-prompt ml-4"
         onClick={handleOpen}
-      >
-        Pay Now {5000}
-      </Button>
+      ></Button>
       {open && (
         <div className="z-10 fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 backdrop-blur-sm">
           <div className="bg-white p-4 rounded-md shadow-md w-full max-w-md">
@@ -124,11 +99,7 @@ function LoadStripe({
 
             <div className="mt-6 flex flex-row justify-around space-x-72">
               <h1 className="font-prompt">Course Amount</h1>
-              <span className="font-prompt font-prompt-semibold">
-                {newOffer
-                  ? `₹${bugs - (bugs * newOffer) / 100}`
-                  : `₹${bugs}.00`}
-              </span>
+              <span className="font-prompt font-prompt-semibold">5000</span>
             </div>
 
             <div className="border-b-2 border-gray-400"></div>
@@ -150,11 +121,4 @@ function LoadStripe({
     </div>
   );
 }
-
-export default function StripeWrapper(props) {
-  return (
-    <Elements stripe={stripePromise} options={{ clientSecret: props.clientSecret }}>
-      <LoadStripe {...props} />
-    </Elements>
-  );
-}
+export default LoadStripe;
