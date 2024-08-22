@@ -9,7 +9,6 @@ function App() {
   return (
     <>
     <Checking/>
-{/* <h1>sss</h1> */}
 
 
      
